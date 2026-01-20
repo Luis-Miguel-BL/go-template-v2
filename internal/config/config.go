@@ -1,0 +1,69 @@
+package config
+
+type BootstrapConfig struct {
+	Environment string    `mapstructure:"environment"`
+	AWS         AWSConfig `mapstructure:"aws"`
+}
+
+type Config struct {
+	Environment string        `mapstructure:"environment"`
+	App         AppConfig     `mapstructure:"app"`
+	Logger      LoggerConfig  `mapstructure:"logger"`
+	Server      ServerConfig  `mapstructure:"server"`
+	Worker      WorkerConfig  `mapstructure:"worker"`
+	AWS         AWSConfig     `mapstructure:"aws"`
+	Monitor     MonitorConfig `mapstructure:"monitor"`
+}
+
+type ServerConfig struct {
+	Port      int    `mapstructure:"port"`
+	Prefix    string `mapstructure:"prefix"`
+	AppKey    string `mapstructure:"app-key"`
+	JWTSecret string `mapstructure:"jwt-secret"`
+}
+
+type WorkerConfig struct {
+	Enabled     bool   `mapstructure:"enabled"`
+	SQSQueueURL string `mapstructure:"sqs-queue-url"`
+}
+
+type LoggerConfig struct {
+	Level string `mapstructure:"level"`
+}
+
+type AppConfig struct {
+	Name       string `mapstructure:"name"`
+	InMemoryDB bool   `mapstructure:"in-memory-db"`
+}
+
+type MonitorConfig struct {
+	Enabled        bool           `mapstructure:"enabled"`
+	NewRelicConfig NewRelicConfig `mapstructure:"new-relic"`
+}
+
+type NewRelicConfig struct {
+	AppKey                 string `mapstructure:"app-key"`
+	CustomEventPrefix      string `mapstructure:"custom-event-prefix"`
+	Endpoint               string `mapstructure:"endpoint"`
+	ShutdownTimeoutSeconds int    `mapstructure:"shutdown-timeout-seconds"`
+}
+
+type AWSConfig struct {
+	Region   string         `mapstructure:"region"`
+	Endpoint string         `mapstructure:"endpoint"`
+	DynamoDB DynamoDBConfig `mapstructure:"dynamodb"`
+	SSM      SSMConfig      `mapstructure:"ssm"`
+}
+
+type DynamoDBConfig struct {
+	LeadTableName string `mapstructure:"lead-table-name"`
+}
+
+type SSMConfig struct {
+	LoadFromSSM     bool   `mapstructure:"load-from-ssm"`
+	ParameterPrefix string `mapstructure:"parameter-prefix"`
+}
+
+func (c *Config) IsProduction() bool {
+	return c.Environment == "production"
+}

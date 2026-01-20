@@ -1,0 +1,36 @@
+meta {
+  name: lead
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{base_url}}/v1/leads
+  body: json
+  auth: inherit
+}
+
+headers {
+  x-api-key: {{api-key}}
+  Authorization: Bearer {{access_token}}
+}
+
+body:json {
+  {
+    "name": "luis miguel",
+    "email": "2001lmbl@gmail.com",
+    "phone": "37998153343",
+    "document_number": "14064435656"  
+  }
+}
+
+script:post-response {
+  if (res.getStatus() == 200) {
+    bru.setEnvVar("access_token",res.getBody().access_token);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

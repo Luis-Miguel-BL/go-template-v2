@@ -1,0 +1,26 @@
+meta {
+  name: SQS - SendMessage
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://sqs.sa-east-1.localhost.localstack.cloud:4566/000000000000/lead-created
+  body: formUrlEncoded
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/x-www-form-urlencoded
+}
+
+body:form-urlencoded {
+  Action: SendMessage
+  MessageBody: {"id":"123","email":"teste@exemplo.com"}
+  Version: 2012-11-05
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+}

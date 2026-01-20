@@ -1,0 +1,36 @@
+{
+  "environment": "local",
+  "logger": {
+    "level": "debug"
+  },
+  "server": {
+    "port": 3000,
+    "prefix": "/v1",
+    "app-key": "your-app-key-here",
+    "jwt-secret": "your-jwt-secret-here"
+  },
+  "worker": {
+    "enabled": true,
+    "sqs-queue-url": "http://sqs.sa-east-1.localhost.localstack.cloud:4566/000000000000/lead-created"
+  },
+  "app": {
+    "name": "go-template",
+    "in-memory-db": false
+  },
+  "aws": {
+    "region": "sa-east-1",
+    "endpoint": "http://localhost:4566",
+    "dynamodb": {
+      "lead-table-name": "lead_single_table"
+    }
+  },
+  "monitor": {
+    "enabled": false,
+    "new-relic": {
+      "custom-event-prefix": "GoTemplate",
+      "app-key": "nr-license-key-here",
+      "endpoint": "otlp.nr-data.net:4318",
+      "shutdown-timeout-seconds": 5
+    }
+  }
+}

@@ -1,0 +1,54 @@
+
+# Go Boilerplate Essential Checklist
+
+- [ ] **Project Structure & Documentation**
+	- [X] Define a clean project structure (`cmd/`, `internal/`, etc.)
+	- [ ] Document the project structure and conventions in the README
+	- [ ] Add API endpoint documentation (Swagger/OpenAPI or similar)
+	- [ ] Improve bootstrap logs
+
+- [X] **Domain Layer**
+	- [X] Implement the Domain Layer with aggregates, entities, value objects, and domain services
+	- [X] Implement VO validations
+	
+- [ ] **Application Layer**
+	- [X] Implement application services / use cases
+	- [ ] Emit application events for side effects (integrations)
+
+- [X] **Event Bus**
+	- [X] Integrate a domain event bus for decoupled event handling
+	- [X] Provide example domain events and subscribers
+
+- [X] **Dependency Injection**
+	- [X] Set up dependency injection using Uber Fx
+	- [X] Register modules and lifecycle hooks
+
+- [X] **Telemetry & Monitoring**
+	- [X] Integrate OpenTelemetry for tracing and metrics
+	- [X] Add New Relic instrumentation for APM
+	- [X] Create examples for custom metrics
+	- [X] Create examples for custom events
+    - [X] Create examples for custom span
+
+- [X] **AWS Integrations**
+	- [X] Implement AWS DynamoDB connection and repository example
+	- [X] Integrate AWS SSM for configuration management
+    - [X] Add AWS SQS integration for messaging
+
+- [ ] **Serverless & Messaging Runners**
+    - [X] Implement and run an SQS consumer
+    - [ ] Implement and run an AWS Lambda function
+
+- [ ] **Automated Testing**
+	- [ ] Add unit tests for core logic
+	- [ ] Add integration tests for infrastructure components
+	- [ ] Set up test coverage reporting
+
+- [ ] **Load Testing**
+	- [ ] Provide load testing scripts or configuration (e.g., k6, Vegeta)
+
+- [ ] **CI/CD**
+	- [ ] Set up CI pipeline for linting, testing, and building
+
+- [ ] **Utilities**
+	- [ ] Add utility functions (UUID generation, error handling, etc.)
