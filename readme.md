@@ -35,9 +35,9 @@
 	- [X] Integrate AWS SSM for configuration management
     - [X] Add AWS SQS integration for messaging
 
-- [ ] **Serverless & Messaging Runners**
+- [X] **Serverless & Messaging Runners**
     - [X] Implement and run an SQS consumer
-    - [ ] Implement and run an AWS Lambda function
+    - [X] Implement and run an AWS Lambda function
 
 - [ ] **Automated Testing**
 	- [ ] Add unit tests for core logic
