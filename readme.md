@@ -11,9 +11,9 @@
 	- [X] Implement the Domain Layer with aggregates, entities, value objects, and domain services
 	- [X] Implement VO validations
 	
-- [ ] **Application Layer**
+- [X] **Application Layer**
 	- [X] Implement application services / use cases
-	- [ ] Emit application events for side effects (integrations)
+	- [X] Emit application events for side effects (integrations)
 
 - [X] **Event Bus**
 	- [X] Integrate a domain event bus for decoupled event handling
@@ -38,6 +38,13 @@
 - [X] **Serverless & Messaging Runners**
     - [X] Implement and run an SQS consumer
     - [X] Implement and run an AWS Lambda function
+
+- [ ] **HTTP Client & External Integrations**
+	- [ ] Add a standardized HTTP client (timeouts, retries, circuit breaker)
+	- [ ] Define an HTTP client interface for external APIs
+	- [ ] Implement an example external API integration
+	- [ ] Add observability to external calls (tracing, metrics, logs)
+	- [ ] Monitor external API latency, errors, and retries (OpenTelemetry + New Relic)
 
 - [ ] **Automated Testing**
 	- [ ] Add unit tests for core logic
