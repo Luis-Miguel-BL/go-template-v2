@@ -206,20 +206,25 @@ func (o *OtelTelemetry) recordHistogram(ctx context.Context, name string, value 
 }
 
 func (o *OtelTelemetry) initTracer(ctx context.Context) error {
-	exporter, err := otlptracehttp.New(ctx,
-		otlptracehttp.WithEndpoint(o.cfg.Monitor.NewRelicConfig.Endpoint),
-		otlptracehttp.WithHeaders(map[string]string{
-			"api-key": o.cfg.Monitor.NewRelicConfig.AppKey,
-		}),
-	)
-	if err != nil {
-		return err
+	traceOpts := []trace.TracerProviderOption{
+		trace.WithResource(o.resource),
 	}
 
-	tp := trace.NewTracerProvider(
-		trace.WithBatcher(exporter),
-		trace.WithResource(o.resource),
-	)
+	if o.cfg.Monitor.Enabled {
+		exporter, err := otlptracehttp.New(ctx,
+			otlptracehttp.WithEndpoint(o.cfg.Monitor.NewRelicConfig.Endpoint),
+			otlptracehttp.WithHeaders(map[string]string{
+				"api-key": o.cfg.Monitor.NewRelicConfig.AppKey,
+			}),
+		)
+		if err != nil {
+			return err
+		}
+
+		traceOpts = append(traceOpts, trace.WithBatcher(exporter))
+	}
+
+	tp := trace.NewTracerProvider(traceOpts...)
 	otel.SetTracerProvider(tp)
 
 	o.tracerProvider = tp
@@ -229,19 +234,24 @@ func (o *OtelTelemetry) initTracer(ctx context.Context) error {
 }
 
 func (o *OtelTelemetry) initMeter(ctx context.Context) error {
-	exporter, err := otlpmetrichttp.New(ctx,
-		otlpmetrichttp.WithEndpoint(o.cfg.Monitor.NewRelicConfig.Endpoint),
-		otlpmetrichttp.WithHeaders(map[string]string{
-			"api-key": o.cfg.Monitor.NewRelicConfig.AppKey,
-		}),
-	)
-	if err != nil {
-		return err
+	metricOpts := []metric.Option{
+		metric.WithResource(o.resource),
+	}
+	if o.cfg.Monitor.Enabled {
+		exporter, err := otlpmetrichttp.New(ctx,
+			otlpmetrichttp.WithEndpoint(o.cfg.Monitor.NewRelicConfig.Endpoint),
+			otlpmetrichttp.WithHeaders(map[string]string{
+				"api-key": o.cfg.Monitor.NewRelicConfig.AppKey,
+			}),
+		)
+		if err != nil {
+			return err
+		}
+		metricOpts = append(metricOpts, metric.WithReader(metric.NewPeriodicReader(exporter)))
 	}
 
 	mp := metric.NewMeterProvider(
-		metric.WithReader(metric.NewPeriodicReader(exporter)),
-		metric.WithResource(o.resource),
+		metricOpts...,
 	)
 	otel.SetMeterProvider(mp)
 

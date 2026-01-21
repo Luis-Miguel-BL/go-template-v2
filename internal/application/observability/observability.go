@@ -41,3 +41,19 @@ func SetObservability(tracer Observability) {
 		globalObservability = tracer
 	})
 }
+
+func StartSpan(ctx context.Context, name string) (context.Context, Span) {
+	return globalObservability.StartSpan(ctx, name)
+}
+func AddAttributes(ctx context.Context, attrs map[string]any) context.Context {
+	return globalObservability.AddAttributes(ctx, attrs)
+}
+func AddEvent(ctx context.Context, event Event) {
+	globalObservability.AddEvent(ctx, event)
+}
+func RecordError(ctx context.Context, err error) {
+	globalObservability.RecordError(ctx, err)
+}
+func TraceIDFromContext(ctx context.Context) string {
+	return globalObservability.TraceIDFromContext(ctx)
+}

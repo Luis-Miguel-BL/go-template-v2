@@ -15,9 +15,9 @@ import (
 
 type Server struct {
 	*echo.Echo
-	telemetry observability.Observability
-	cfg       *config.Config
-	log       logger.Logger
+	obs observability.Observability
+	cfg *config.Config
+	log logger.Logger
 
 	authService *service.AuthService
 
@@ -25,12 +25,12 @@ type Server struct {
 	authController *controller.AuthController
 }
 
-func NewServer(cfg *config.Config, log logger.Logger, telemetry observability.Observability, authService *service.AuthService, leadController *controller.LeadController, authController *controller.AuthController) *Server {
+func NewServer(cfg *config.Config, log logger.Logger, obs observability.Observability, authService *service.AuthService, leadController *controller.LeadController, authController *controller.AuthController) *Server {
 	server := &Server{
 		Echo:           echo.New(),
 		cfg:            cfg,
 		log:            log,
-		telemetry:      telemetry,
+		obs:            obs,
 		authService:    authService,
 		leadController: leadController,
 		authController: authController,

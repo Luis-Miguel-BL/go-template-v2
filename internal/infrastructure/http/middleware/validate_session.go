@@ -12,7 +12,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func NewValidateSessionMiddleware(authService *service.AuthService) echo.MiddlewareFunc {
+func NewValidateSessionMiddleware(authService *service.AuthService, obs observability.Observability) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) (err error) {
 			ctx := c.Request().Context()
@@ -27,7 +27,7 @@ func NewValidateSessionMiddleware(authService *service.AuthService) echo.Middlew
 			}
 
 			ctx = auth.NewContext(ctx, tokenClaims)
-			ctx = enrichContextAndLogger(ctx, *tokenClaims)
+			ctx = enrichContextAndLogger(ctx, *tokenClaims, obs)
 			c.SetRequest(c.Request().WithContext(ctx))
 
 			return next(c)
@@ -35,7 +35,7 @@ func NewValidateSessionMiddleware(authService *service.AuthService) echo.Middlew
 	}
 }
 
-func NewValidateLeadSessionMiddleware(authService *service.AuthService) echo.MiddlewareFunc {
+func NewValidateLeadSessionMiddleware(authService *service.AuthService, obs observability.Observability) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) (err error) {
 			ctx := c.Request().Context()
@@ -48,7 +48,7 @@ func NewValidateLeadSessionMiddleware(authService *service.AuthService) echo.Mid
 				return echo.NewHTTPError(http.StatusUnauthorized, http.StatusText(http.StatusUnauthorized))
 			}
 
-			ctx = enrichContextAndLogger(ctx, *token)
+			ctx = enrichContextAndLogger(ctx, *token, obs)
 			c.SetRequest(c.Request().WithContext(ctx))
 
 			return next(c)
@@ -70,7 +70,7 @@ func getBearerAuth(r *http.Request) (string, bool) {
 	return token, token != ""
 }
 
-func enrichContextAndLogger(ctx context.Context, token service.TokenClaims) context.Context {
+func enrichContextAndLogger(ctx context.Context, token service.TokenClaims, obs observability.Observability) context.Context {
 	leadID := ""
 	if token.LeadID != nil {
 		leadID = *token.LeadID
@@ -80,7 +80,7 @@ func enrichContextAndLogger(ctx context.Context, token service.TokenClaims) cont
 		sessionID = *token.SessionID
 	}
 
-	ctx = observability.GetObservability().AddAttributes(ctx, map[string]any{
+	ctx = obs.AddAttributes(ctx, map[string]any{
 		"lead_id":    leadID,
 		"session_id": sessionID,
 	})
@@ -89,7 +89,7 @@ func enrichContextAndLogger(ctx context.Context, token service.TokenClaims) cont
 	log = log.WithFields(map[string]any{
 		"lead_id":    leadID,
 		"session_id": sessionID,
-		"trace_id":   observability.GetObservability().TraceIDFromContext(ctx),
+		"trace_id":   obs.TraceIDFromContext(ctx),
 	})
 
 	return logger.NewContext(ctx, log)

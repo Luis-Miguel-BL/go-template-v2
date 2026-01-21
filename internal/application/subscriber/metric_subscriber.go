@@ -11,10 +11,11 @@ import (
 )
 
 type metricSubscriber struct {
+	obs observability.Observability
 }
 
-func NewMetricSubscriber() eventbus.EventSubscriber {
-	return &metricSubscriber{}
+func NewMetricSubscriber(obs observability.Observability) eventbus.EventSubscriber {
+	return &metricSubscriber{obs: obs}
 }
 
 func (s *metricSubscriber) SubscribedEvents() (syncHandlers eventbus.EventHandlersMap, asyncHandlers eventbus.EventHandlersMap) {
@@ -24,5 +25,5 @@ func (s *metricSubscriber) SubscribedEvents() (syncHandlers eventbus.EventHandle
 }
 
 func (s *metricSubscriber) TrackLeadCreated(ctx context.Context, e domain.Event) {
-	observability.GetObservability().RecordMetric(ctx, metric.LeadCounter{})
+	s.obs.RecordMetric(ctx, metric.LeadCounter{})
 }

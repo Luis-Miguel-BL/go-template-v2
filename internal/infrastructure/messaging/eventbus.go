@@ -13,14 +13,16 @@ import (
 
 type domainEventBus struct {
 	wg            *sync.WaitGroup
+	obs           observability.Observability
 	syncHandlers  map[domain.EventName][]eventbus.EventHandler
 	asyncHandlers map[domain.EventName][]eventbus.EventHandler
 	handlerNames  map[uintptr]string
 }
 
-func NewDomainEventBus(wg *sync.WaitGroup, eventSubscribers ...eventbus.EventSubscriber) eventbus.EventBus {
+func NewDomainEventBus(wg *sync.WaitGroup, obs observability.Observability, eventSubscribers ...eventbus.EventSubscriber) eventbus.EventBus {
 	bus := &domainEventBus{
 		wg:            wg,
+		obs:           obs,
 		syncHandlers:  make(map[domain.EventName][]eventbus.EventHandler),
 		asyncHandlers: make(map[domain.EventName][]eventbus.EventHandler),
 		handlerNames:  make(map[uintptr]string),
@@ -75,7 +77,7 @@ func (b *domainEventBus) subscribeAll(eventSubscribers ...eventbus.EventSubscrib
 
 func (b *domainEventBus) doPublish(handler eventbus.EventHandler, ctx context.Context, event domain.Event) {
 	defer b.wg.Done()
-	ctx, span := observability.GetObservability().StartSpan(ctx, "EventBus.Publish")
+	ctx, span := b.obs.StartSpan(ctx, "EventBus.Publish")
 	defer span.End()
 
 	handlerName := b.handlerNames[getHandlerPointer(handler)]

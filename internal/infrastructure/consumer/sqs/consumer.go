@@ -17,6 +17,7 @@ type Consumer struct {
 	cfg     ConsumerConfig
 	logger  logger.Logger
 	client  *aws.SQSClient
+	obs     observability.Observability
 	handler Handler
 	ctx     context.Context
 	cancel  context.CancelFunc
@@ -34,6 +35,7 @@ type ConsumerConfig struct {
 func NewConsumer(
 	cfg ConsumerConfig,
 	client *aws.SQSClient,
+	obs observability.Observability,
 	handler Handler,
 	logger logger.Logger,
 ) *Consumer {
@@ -53,6 +55,7 @@ func NewConsumer(
 		cfg:     cfg,
 		client:  client,
 		handler: handler,
+		obs:     obs,
 		ctx:     ctx,
 		cancel:  cancel,
 		logger:  logger.WithFields(map[string]any{"queue_url": cfg.QueueURL}),
@@ -103,7 +106,7 @@ func (c *Consumer) run(wg *sync.WaitGroup) {
 }
 
 func (c *Consumer) handle(ctx context.Context, msg types.Message) HandleResult {
-	ctx, span := observability.GetObservability().StartSpan(c.ctx, "sqs.consumer.handle_message")
+	ctx, span := c.obs.StartSpan(c.ctx, "sqs.consumer.handle_message")
 	defer span.End()
 
 	result, err := c.handler.Handle(ctx, msg)

@@ -1,6 +1,7 @@
-package modules
+package fx
 
 import (
+	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/observability"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/service"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/usecase"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/config"
@@ -21,12 +22,12 @@ var ApplicationModule = fx.Module("application",
 		service.NewAuthService,
 
 		// repositories
-		func(cfg *config.Config, dispatcher *messaging.AggregateRootEventDispatcher, dynamoDBClient *aws.DynamoDBClient) (leadRepo lead.LeadRepository) {
+		func(cfg *config.Config, obs observability.Observability, dispatcher *messaging.AggregateRootEventDispatcher, dynamoDBClient *aws.DynamoDBClient) (leadRepo lead.LeadRepository) {
 			leadRepo = repository.NewInMemoryLeadRepository(dispatcher)
 			if !cfg.App.InMemoryDB {
 				leadRepo = repository.NewDynamoDBLeadRepository(cfg.AWS.DynamoDB.LeadTableName, dispatcher, dynamoDBClient)
 			}
-			return decorator.NewMonitoringLeadRepository(leadRepo)
+			return decorator.NewMonitoringLeadRepository(leadRepo, obs)
 		},
 	),
 )

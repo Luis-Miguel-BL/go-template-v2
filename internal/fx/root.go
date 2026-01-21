@@ -1,4 +1,4 @@
-package modules
+package fx
 
 import (
 	"context"
@@ -45,18 +45,18 @@ func RootModule(wg *sync.WaitGroup) fx.Option {
 			fx.Annotate(subscriber.NewMonitorSubscriber, fx.ResultTags(`group:"subscribers"`)),
 			fx.Annotate(subscriber.NewMetricSubscriber, fx.ResultTags(`group:"subscribers"`)),
 			fx.Annotate(
-				func(eventSubscribers ...eventbus.EventSubscriber) eventbus.EventBus {
-					return messaging.NewDomainEventBus(wg, eventSubscribers...)
+				func(obs observability.Observability, eventSubscribers ...eventbus.EventSubscriber) eventbus.EventBus {
+					return messaging.NewDomainEventBus(wg, obs, eventSubscribers...)
 				},
-				fx.ParamTags(`group:"subscribers"`),
+				fx.ParamTags(``, `group:"subscribers"`),
 			),
 		),
 
 		fx.Invoke(
-			func(lc fx.Lifecycle, telemetry observability.Observability) {
+			func(lc fx.Lifecycle, obs observability.Observability) {
 				lc.Append(fx.Hook{
 					OnStop: func(ctx context.Context) error {
-						return telemetry.Shutdown(ctx)
+						return obs.Shutdown(ctx)
 					},
 				})
 			},

@@ -10,16 +10,18 @@ import (
 
 type MonitoringLeadRepository struct {
 	repo lead.LeadRepository
+	obs  observability.Observability
 }
 
-func NewMonitoringLeadRepository(repo lead.LeadRepository) *MonitoringLeadRepository {
+func NewMonitoringLeadRepository(repo lead.LeadRepository, obs observability.Observability) *MonitoringLeadRepository {
 	return &MonitoringLeadRepository{
 		repo: repo,
+		obs:  obs,
 	}
 }
 
 func (m *MonitoringLeadRepository) Save(ctx context.Context, lead *model.Lead) error {
-	ctx, span := observability.GetObservability().StartSpan(ctx, "repository.lead.save")
+	ctx, span := m.obs.StartSpan(ctx, "repository.lead.save")
 	defer span.End()
 
 	err := m.repo.Save(ctx, lead)
@@ -30,7 +32,7 @@ func (m *MonitoringLeadRepository) Save(ctx context.Context, lead *model.Lead) e
 }
 
 func (m *MonitoringLeadRepository) GetByID(ctx context.Context, leadID string) (*model.Lead, error) {
-	ctx, span := observability.GetObservability().StartSpan(ctx, "repository.lead.get_by_id")
+	ctx, span := m.obs.StartSpan(ctx, "repository.lead.get_by_id")
 	defer span.End()
 
 	lead, err := m.repo.GetByID(ctx, leadID)

@@ -67,3 +67,6 @@ type SSMConfig struct {
 func (c *Config) IsProduction() bool {
 	return c.Environment == "production"
 }
+func (c *Config) IsLocal() bool {
+	return c.Environment == "local"
+}

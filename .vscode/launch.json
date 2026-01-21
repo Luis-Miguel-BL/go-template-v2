@@ -33,6 +33,22 @@
           "APP_AWS_SSM_LOAD_FROM_SSM":"false",
           "APP_ENVIRONMENT":"local"
         }
+      },
+      {
+        "name": "Start Lambda",
+        "type": "go",
+        "request": "launch",
+        "mode": "auto",
+        "program": "${workspaceFolder}/cmd/lambda/main.go",
+        "dlvFlags": ["--check-go-version=false"],
+        "cwd": "${workspaceFolder}/",
+        "buildFlags": "-ldflags=-X=main.FunctionName=ExampleSQSHandler",
+        "env": {
+          "APP_AWS_ENDPOINT":"http://localhost:4566",
+          "APP_AWS_REGION":"sa-east-1",
+          "APP_AWS_SSM_LOAD_FROM_SSM":"false",
+          "APP_ENVIRONMENT":"local"
+        }
       }
     ]
   }
