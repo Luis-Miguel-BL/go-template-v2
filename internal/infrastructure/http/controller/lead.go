@@ -30,7 +30,7 @@ func (c *LeadController) Create(ctx echo.Context) error {
 
 	output, err := c.createLeadUseCase.Execute(context, dto.CreateLeadInput(reqBody))
 	if err != nil {
-		return Error(ctx, err)
+		return err
 	}
 	return Ok(ctx, payload.CreateLeadResponse{
 		LeadID:      output.LeadID,

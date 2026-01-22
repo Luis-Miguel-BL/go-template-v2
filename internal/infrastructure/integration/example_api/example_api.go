@@ -3,7 +3,7 @@ package exampleapi
 import (
 	"context"
 
-	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/erros"
+	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/errors"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/telemetry"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/config"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/infrastructure/httpclient"
@@ -36,17 +36,17 @@ func (e *ExampleAPIIntegration) Create(ctx context.Context) (exampleID string, e
 	}
 	res, err := e.httpClient.Post(ctx, "/create-endpoint", httpclient.WithBody(reqBody))
 	if err != nil {
-		return "", erros.UpstreamUnavailableError(0, err)
+		return "", errors.UpstreamUnavailableError(0, err)
 	}
 
 	if !res.IsSuccess() {
-		return "", erros.UpstreamRejectedError(res.StatusCode(), err)
+		return "", errors.UpstreamRejectedError(res.StatusCode(), err)
 	}
 
 	var resDTO CreateExampleResponseDTO
 	err = res.Unmarshal(&resDTO)
 	if err != nil {
-		return "", erros.UpstreamInvalidResponseError(res.StatusCode(), err)
+		return "", errors.UpstreamInvalidResponseError(res.StatusCode(), err)
 	}
 
 	return resDTO.ID, nil

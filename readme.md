@@ -57,5 +57,5 @@
 - [ ] **CI/CD**
 	- [ ] Set up CI pipeline for linting, testing, and building
 
-- [ ] **Utilities**
-	- [ ] Add utility functions (UUID generation, error handling, etc.)
+- [X] **Utilities**
+	- [X] Add utility functions (UUID generation, error handling, etc.)

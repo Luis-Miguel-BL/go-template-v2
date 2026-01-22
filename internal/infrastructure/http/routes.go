@@ -13,6 +13,7 @@ func (s *Server) setup() {
 	s.Echo.Use(telemetryMiddlewares...)
 
 	s.Echo.Use(middleware.NewLoggerMiddleware(s.log))
+	s.Echo.Use(middleware.NewErrorHandlerMiddleware(s.log))
 	s.Echo.GET("/health", func(c echo.Context) error {
 		return c.String(http.StatusOK, "OK")
 	})
