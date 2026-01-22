@@ -32,8 +32,9 @@ func NewEventBase() *EventBase {
 	}
 }
 
-func (e *EventBase) WithMetadata(metadata EventMetadata) {
+func (e *EventBase) WithMetadata(metadata EventMetadata) *EventBase {
 	e.metadata = metadata
+	return e
 }
 
 func (e *EventBase) EventID() EventID {
