@@ -1,14 +1,16 @@
-package observability
+package telemetry
 
 import (
 	"context"
 	"fmt"
 	"maps"
+	"net/http"
 	"sync"
 
-	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/observability"
+	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/telemetry"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/config"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
@@ -71,7 +73,7 @@ func NewOtelTelemetry(cfg *config.Config) (*OtelTelemetry, error) {
 		return nil, err
 	}
 
-	observability.SetObservability(otelTelemetry)
+	telemetry.SetTelemetry(otelTelemetry)
 
 	return otelTelemetry, nil
 }
@@ -116,19 +118,19 @@ func (o *OtelTelemetry) AddAttributes(ctx context.Context, attrs map[string]any)
 	return ctx
 }
 
-func (o *OtelTelemetry) RecordMetric(ctx context.Context, metric observability.Metric) {
+func (o *OtelTelemetry) RecordMetric(ctx context.Context, metric telemetry.Metric) {
 	switch metric.Type() {
-	case observability.MetricTypeCounter:
+	case telemetry.MetricTypeCounter:
 		o.recordCounter(ctx, metric.Name(), metric.Value(), metric.Attributes())
-	case observability.MetricTypeGauge:
+	case telemetry.MetricTypeGauge:
 		o.recordGauge(ctx, metric.Name(), metric.Value(), metric.Attributes())
-	case observability.MetricTypeHistogram:
+	case telemetry.MetricTypeHistogram:
 		o.recordHistogram(ctx, metric.Name(), metric.Value(), metric.Attributes())
 	}
 }
 
 // Using New Relic to add custom events
-func (o *OtelTelemetry) AddEvent(ctx context.Context, event observability.Event) {
+func (o *OtelTelemetry) AddEvent(ctx context.Context, event telemetry.Event) {
 	eventName := fmt.Sprintf("%s%s", o.cfg.Monitor.NewRelicConfig.CustomEventPrefix, event.Name())
 	attrs := event.Attributes()
 
@@ -138,7 +140,7 @@ func (o *OtelTelemetry) AddEvent(ctx context.Context, event observability.Event)
 	}
 }
 
-func (o *OtelTelemetry) StartSpan(ctx context.Context, name string) (context.Context, observability.Span) {
+func (o *OtelTelemetry) StartSpan(ctx context.Context, name string) (context.Context, telemetry.Span) {
 	var opts []otel_trace.SpanStartOption
 	attrs := getSpanAttributesFromContext(ctx)
 	if len(attrs) > 0 {
@@ -165,6 +167,10 @@ func (o *OtelTelemetry) GetServerMiddlewares() []any {
 	return []any{
 		otelecho.Middleware(o.cfg.App.Name),
 	}
+}
+
+func (o *OtelTelemetry) NewHttpTransport() http.RoundTripper {
+	return otelhttp.NewTransport(http.DefaultTransport)
 }
 
 func (o *OtelTelemetry) recordCounter(ctx context.Context, name string, value int64, attrs map[string]any) {

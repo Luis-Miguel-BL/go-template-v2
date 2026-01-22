@@ -7,22 +7,22 @@ import (
 	"sync"
 
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/eventbus"
-	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/observability"
+	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/telemetry"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/domain"
 )
 
 type domainEventBus struct {
 	wg            *sync.WaitGroup
-	obs           observability.Observability
+	telemetry     telemetry.Telemetry
 	syncHandlers  map[domain.EventName][]eventbus.EventHandler
 	asyncHandlers map[domain.EventName][]eventbus.EventHandler
 	handlerNames  map[uintptr]string
 }
 
-func NewDomainEventBus(wg *sync.WaitGroup, obs observability.Observability, eventSubscribers ...eventbus.EventSubscriber) eventbus.EventBus {
+func NewDomainEventBus(wg *sync.WaitGroup, telemetry telemetry.Telemetry, eventSubscribers ...eventbus.EventSubscriber) eventbus.EventBus {
 	bus := &domainEventBus{
 		wg:            wg,
-		obs:           obs,
+		telemetry:     telemetry,
 		syncHandlers:  make(map[domain.EventName][]eventbus.EventHandler),
 		asyncHandlers: make(map[domain.EventName][]eventbus.EventHandler),
 		handlerNames:  make(map[uintptr]string),
@@ -77,7 +77,7 @@ func (b *domainEventBus) subscribeAll(eventSubscribers ...eventbus.EventSubscrib
 
 func (b *domainEventBus) doPublish(handler eventbus.EventHandler, ctx context.Context, event domain.Event) {
 	defer b.wg.Done()
-	ctx, span := b.obs.StartSpan(ctx, "EventBus.Publish")
+	ctx, span := b.telemetry.StartSpan(ctx, "EventBus.Publish")
 	defer span.End()
 
 	handlerName := b.handlerNames[getHandlerPointer(handler)]

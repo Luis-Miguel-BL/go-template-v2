@@ -1,11 +1,12 @@
-package observability
+package telemetry
 
 import (
 	"context"
+	"net/http"
 	"sync"
 )
 
-type Observability interface {
+type Telemetry interface {
 	// Tracing
 	StartSpan(ctx context.Context, name string) (context.Context, Span)
 	AddAttributes(ctx context.Context, attrs map[string]any) context.Context
@@ -17,6 +18,7 @@ type Observability interface {
 	RecordMetric(ctx context.Context, metric Metric)
 
 	GetServerMiddlewares() []any
+	NewHttpTransport() http.RoundTripper
 
 	Shutdown(ctx context.Context) error
 }
@@ -28,32 +30,32 @@ type Span interface {
 }
 
 var (
-	globalObservability Observability
-	onceObservability   sync.Once
+	globalTelemetry Telemetry
+	onceTelemetry   sync.Once
 )
 
-func GetObservability() Observability {
-	return globalObservability
+func GetTelemetry() Telemetry {
+	return globalTelemetry
 }
 
-func SetObservability(tracer Observability) {
-	onceObservability.Do(func() {
-		globalObservability = tracer
+func SetTelemetry(tracer Telemetry) {
+	onceTelemetry.Do(func() {
+		globalTelemetry = tracer
 	})
 }
 
 func StartSpan(ctx context.Context, name string) (context.Context, Span) {
-	return globalObservability.StartSpan(ctx, name)
+	return globalTelemetry.StartSpan(ctx, name)
 }
 func AddAttributes(ctx context.Context, attrs map[string]any) context.Context {
-	return globalObservability.AddAttributes(ctx, attrs)
+	return globalTelemetry.AddAttributes(ctx, attrs)
 }
 func AddEvent(ctx context.Context, event Event) {
-	globalObservability.AddEvent(ctx, event)
+	globalTelemetry.AddEvent(ctx, event)
 }
 func RecordError(ctx context.Context, err error) {
-	globalObservability.RecordError(ctx, err)
+	globalTelemetry.RecordError(ctx, err)
 }
 func TraceIDFromContext(ctx context.Context) string {
-	return globalObservability.TraceIDFromContext(ctx)
+	return globalTelemetry.TraceIDFromContext(ctx)
 }

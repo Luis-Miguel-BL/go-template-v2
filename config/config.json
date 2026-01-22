@@ -32,5 +32,12 @@
       "endpoint": "otlp.nr-data.net:4318",
       "shutdown-timeout-seconds": 5
     }
+  },
+  "integration": {
+    "example-api": {
+      "enabled": true,
+      "base-url": "https://api.example.com",
+      "api-key": "your-api-key-here"
+    }
   }
 }

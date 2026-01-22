@@ -7,12 +7,12 @@ import (
 
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/auth"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/logger"
-	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/observability"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/service"
+	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/telemetry"
 	"github.com/labstack/echo/v4"
 )
 
-func NewValidateSessionMiddleware(authService *service.AuthService, obs observability.Observability) echo.MiddlewareFunc {
+func NewValidateSessionMiddleware(authService *service.AuthService, telemetry telemetry.Telemetry) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) (err error) {
 			ctx := c.Request().Context()
@@ -27,7 +27,7 @@ func NewValidateSessionMiddleware(authService *service.AuthService, obs observab
 			}
 
 			ctx = auth.NewContext(ctx, tokenClaims)
-			ctx = enrichContextAndLogger(ctx, *tokenClaims, obs)
+			ctx = enrichContextAndLogger(ctx, *tokenClaims, telemetry)
 			c.SetRequest(c.Request().WithContext(ctx))
 
 			return next(c)
@@ -35,7 +35,7 @@ func NewValidateSessionMiddleware(authService *service.AuthService, obs observab
 	}
 }
 
-func NewValidateLeadSessionMiddleware(authService *service.AuthService, obs observability.Observability) echo.MiddlewareFunc {
+func NewValidateLeadSessionMiddleware(authService *service.AuthService, telemetry telemetry.Telemetry) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) (err error) {
 			ctx := c.Request().Context()
@@ -48,7 +48,7 @@ func NewValidateLeadSessionMiddleware(authService *service.AuthService, obs obse
 				return echo.NewHTTPError(http.StatusUnauthorized, http.StatusText(http.StatusUnauthorized))
 			}
 
-			ctx = enrichContextAndLogger(ctx, *token, obs)
+			ctx = enrichContextAndLogger(ctx, *token, telemetry)
 			c.SetRequest(c.Request().WithContext(ctx))
 
 			return next(c)
@@ -70,7 +70,7 @@ func getBearerAuth(r *http.Request) (string, bool) {
 	return token, token != ""
 }
 
-func enrichContextAndLogger(ctx context.Context, token service.TokenClaims, obs observability.Observability) context.Context {
+func enrichContextAndLogger(ctx context.Context, token service.TokenClaims, telemetry telemetry.Telemetry) context.Context {
 	leadID := ""
 	if token.LeadID != nil {
 		leadID = *token.LeadID
@@ -80,7 +80,7 @@ func enrichContextAndLogger(ctx context.Context, token service.TokenClaims, obs 
 		sessionID = *token.SessionID
 	}
 
-	ctx = obs.AddAttributes(ctx, map[string]any{
+	ctx = telemetry.AddAttributes(ctx, map[string]any{
 		"lead_id":    leadID,
 		"session_id": sessionID,
 	})
@@ -89,7 +89,7 @@ func enrichContextAndLogger(ctx context.Context, token service.TokenClaims, obs 
 	log = log.WithFields(map[string]any{
 		"lead_id":    leadID,
 		"session_id": sessionID,
-		"trace_id":   obs.TraceIDFromContext(ctx),
+		"trace_id":   telemetry.TraceIDFromContext(ctx),
 	})
 
 	return logger.NewContext(ctx, log)

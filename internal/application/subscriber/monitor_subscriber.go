@@ -5,18 +5,18 @@ import (
 
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/eventbus"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/logger"
-	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/observability"
-	obs_event "github.com/Luis-Miguel-BL/go-lm-template/internal/application/observability/event"
+	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/telemetry"
+	telemetry_event "github.com/Luis-Miguel-BL/go-lm-template/internal/application/telemetry/event"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/domain"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/domain/lead/event"
 )
 
 type monitorSubscriber struct {
-	obs observability.Observability
+	telemetry telemetry.Telemetry
 }
 
-func NewMonitorSubscriber(obs observability.Observability) eventbus.EventSubscriber {
-	return &monitorSubscriber{obs: obs}
+func NewMonitorSubscriber(telemetry telemetry.Telemetry) eventbus.EventSubscriber {
+	return &monitorSubscriber{telemetry: telemetry}
 }
 
 func (s *monitorSubscriber) SubscribedEvents() (syncHandlers eventbus.EventHandlersMap, asyncHandlers eventbus.EventHandlersMap) {
@@ -30,7 +30,7 @@ func (s *monitorSubscriber) TrackLeadCreated(ctx context.Context, e domain.Event
 	event := e.(event.LeadCreated)
 	log.Debug("Lead created")
 
-	s.obs.AddEvent(ctx, obs_event.LeadCreated{
+	s.telemetry.AddEvent(ctx, telemetry_event.LeadCreated{
 		LeadID:    event.LeadUUID,
 		CreatedAt: event.OccurredAt(),
 	})

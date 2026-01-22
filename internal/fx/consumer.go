@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/logger"
-	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/observability"
+	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/telemetry"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/config"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/infrastructure/aws"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/infrastructure/consumer/sqs"
@@ -52,9 +52,9 @@ func ConsumerModule(wg *sync.WaitGroup) fx.Option {
 	)
 }
 
-func newExampleConsumer(cfg *config.Config, client *aws.SQSClient, obs observability.Observability, handler *handler.ExampleHandler, logger logger.Logger) *sqs.Consumer {
+func newExampleConsumer(cfg *config.Config, client *aws.SQSClient, telemetry telemetry.Telemetry, handler *handler.ExampleHandler, logger logger.Logger) *sqs.Consumer {
 	consumerConfig := sqs.ConsumerConfig{
 		QueueURL: cfg.Worker.SQSQueueURL,
 	}
-	return sqs.NewConsumer(consumerConfig, client, obs, handler, logger)
+	return sqs.NewConsumer(consumerConfig, client, telemetry, handler, logger)
 }

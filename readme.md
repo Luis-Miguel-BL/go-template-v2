@@ -39,12 +39,12 @@
     - [X] Implement and run an SQS consumer
     - [X] Implement and run an AWS Lambda function
 
-- [ ] **HTTP Client & External Integrations**
-	- [ ] Add a standardized HTTP client (timeouts, retries, circuit breaker)
-	- [ ] Define an HTTP client interface for external APIs
-	- [ ] Implement an example external API integration
-	- [ ] Add observability to external calls (tracing, metrics, logs)
-	- [ ] Monitor external API latency, errors, and retries (OpenTelemetry + New Relic)
+- [X] **HTTP Client & External Integrations**
+	- [X] Add a standardized HTTP client (timeouts, retries, circuit breaker)
+	- [X] Define an HTTP client interface for external APIs
+	- [X] Implement an example external API integration
+	- [X] Add observability to external calls (tracing, metrics, logs)
+	- [X] Monitor external API latency, errors, and retries (OpenTelemetry + New Relic)
 
 - [ ] **Automated Testing**
 	- [ ] Add unit tests for core logic

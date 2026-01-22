@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/logger"
-	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/observability"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/service"
+	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/telemetry"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/config"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/infrastructure/http/controller"
 	"github.com/labstack/echo/v4"
@@ -15,9 +15,9 @@ import (
 
 type Server struct {
 	*echo.Echo
-	obs observability.Observability
-	cfg *config.Config
-	log logger.Logger
+	telemetry telemetry.Telemetry
+	cfg       *config.Config
+	log       logger.Logger
 
 	authService *service.AuthService
 
@@ -25,12 +25,12 @@ type Server struct {
 	authController *controller.AuthController
 }
 
-func NewServer(cfg *config.Config, log logger.Logger, obs observability.Observability, authService *service.AuthService, leadController *controller.LeadController, authController *controller.AuthController) *Server {
+func NewServer(cfg *config.Config, log logger.Logger, telemetry telemetry.Telemetry, authService *service.AuthService, leadController *controller.LeadController, authController *controller.AuthController) *Server {
 	server := &Server{
 		Echo:           echo.New(),
 		cfg:            cfg,
 		log:            log,
-		obs:            obs,
+		telemetry:      telemetry,
 		authService:    authService,
 		leadController: leadController,
 		authController: authController,

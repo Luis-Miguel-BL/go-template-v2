@@ -1,11 +1,12 @@
-package observability
+package telemetry
 
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"time"
 
-	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/observability"
+	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/telemetry"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/config"
 	"github.com/newrelic/go-agent/v3/integrations/nrecho-v4"
 	"github.com/newrelic/go-agent/v3/newrelic"
@@ -27,7 +28,7 @@ func NewNewRelicTelemetry(cfg *config.Config) (*NewRelicTelemetry, error) {
 		return nil, err
 	}
 
-	observability.SetObservability(newRelicTelemetry)
+	telemetry.SetTelemetry(newRelicTelemetry)
 
 	return newRelicTelemetry, nil
 }
@@ -41,7 +42,7 @@ func (n *NewRelicTelemetry) AddAttributes(ctx context.Context, attrs map[string]
 	return ctx
 }
 
-func (n *NewRelicTelemetry) AddEvent(ctx context.Context, event observability.Event) {
+func (n *NewRelicTelemetry) AddEvent(ctx context.Context, event telemetry.Event) {
 	eventName := fmt.Sprintf("%s%s", n.cfg.Monitor.NewRelicConfig.CustomEventPrefix, event.Name())
 	attrs := event.Attributes()
 
@@ -62,11 +63,11 @@ func (n *NewRelicTelemetry) TraceIDFromContext(ctx context.Context) string {
 	return txn.GetTraceMetadata().TraceID
 }
 
-func (n *NewRelicTelemetry) RecordMetric(ctx context.Context, metric observability.Metric) {
+func (n *NewRelicTelemetry) RecordMetric(ctx context.Context, metric telemetry.Metric) {
 	n.newRelicApp.RecordCustomMetric(metric.Name(), float64(metric.Value()))
 }
 
-func (n *NewRelicTelemetry) StartSpan(ctx context.Context, name string) (context.Context, observability.Span) {
+func (n *NewRelicTelemetry) StartSpan(ctx context.Context, name string) (context.Context, telemetry.Span) {
 	txn := newrelic.FromContext(ctx)
 	if txn == nil {
 		txn = n.newRelicApp.StartTransaction(name)
@@ -107,6 +108,10 @@ func (n *NewRelicTelemetry) GetServerMiddlewares() []any {
 	return []any{
 		nrecho.Middleware(n.newRelicApp),
 	}
+}
+
+func (n *NewRelicTelemetry) NewHttpTransport() http.RoundTripper {
+	return newrelic.NewRoundTripper(http.DefaultTransport)
 }
 
 func (n *NewRelicTelemetry) initNewRelicApp() error {

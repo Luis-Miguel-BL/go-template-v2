@@ -9,8 +9,8 @@ import (
 
 func (s *Server) setup() {
 	s.Echo.HideBanner = true
-	observabilityMiddlewares := s.getObservabilityMiddlewares()
-	s.Echo.Use(observabilityMiddlewares...)
+	telemetryMiddlewares := s.getObservabilityMiddlewares()
+	s.Echo.Use(telemetryMiddlewares...)
 
 	s.Echo.Use(middleware.NewLoggerMiddleware(s.log))
 	s.Echo.GET("/health", func(c echo.Context) error {
@@ -20,24 +20,24 @@ func (s *Server) setup() {
 
 	baseRoute.POST("/authorization", s.authController.Authorization)
 
-	publicRoute := baseRoute.Group("", middleware.NewValidateSessionMiddleware(s.authService, s.obs))
-	privateRoute := publicRoute.Group("", middleware.NewValidateLeadSessionMiddleware(s.authService, s.obs))
+	publicRoute := baseRoute.Group("", middleware.NewValidateSessionMiddleware(s.authService, s.telemetry))
+	privateRoute := publicRoute.Group("", middleware.NewValidateLeadSessionMiddleware(s.authService, s.telemetry))
 
 	publicRoute.POST("/leads", s.leadController.Create)
 	privateRoute.POST("/leads2", s.leadController.Create)
 }
 
 func (s *Server) getObservabilityMiddlewares() []echo.MiddlewareFunc {
-	observabilityMiddlewares := []echo.MiddlewareFunc{}
-	tm := s.obs.GetServerMiddlewares()
+	telemetryMiddlewares := []echo.MiddlewareFunc{}
+	tm := s.telemetry.GetServerMiddlewares()
 
 	for _, m := range tm {
 		switch mw := m.(type) {
 		case echo.MiddlewareFunc:
-			observabilityMiddlewares = append(observabilityMiddlewares, mw)
+			telemetryMiddlewares = append(telemetryMiddlewares, mw)
 		case func(next echo.HandlerFunc) echo.HandlerFunc:
-			observabilityMiddlewares = append(observabilityMiddlewares, echo.MiddlewareFunc(mw))
+			telemetryMiddlewares = append(telemetryMiddlewares, echo.MiddlewareFunc(mw))
 		}
 	}
-	return observabilityMiddlewares
+	return telemetryMiddlewares
 }

@@ -1,4 +1,4 @@
-package observability
+package telemetry
 
 type Metric interface {
 	Name() string

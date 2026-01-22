@@ -1,4 +1,4 @@
-package observability
+package telemetry
 
 type Event interface {
 	Name() string

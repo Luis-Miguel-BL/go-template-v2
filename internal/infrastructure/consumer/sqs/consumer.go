@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/logger"
-	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/observability"
+	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/telemetry"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/infrastructure/aws"
 	_aws "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
@@ -14,13 +14,13 @@ import (
 )
 
 type Consumer struct {
-	cfg     ConsumerConfig
-	logger  logger.Logger
-	client  *aws.SQSClient
-	obs     observability.Observability
-	handler Handler
-	ctx     context.Context
-	cancel  context.CancelFunc
+	cfg       ConsumerConfig
+	logger    logger.Logger
+	client    *aws.SQSClient
+	telemetry telemetry.Telemetry
+	handler   Handler
+	ctx       context.Context
+	cancel    context.CancelFunc
 }
 
 type ConsumerConfig struct {
@@ -35,7 +35,7 @@ type ConsumerConfig struct {
 func NewConsumer(
 	cfg ConsumerConfig,
 	client *aws.SQSClient,
-	obs observability.Observability,
+	telemetry telemetry.Telemetry,
 	handler Handler,
 	logger logger.Logger,
 ) *Consumer {
@@ -52,13 +52,13 @@ func NewConsumer(
 	ctx, cancel := context.WithCancel(context.Background())
 
 	return &Consumer{
-		cfg:     cfg,
-		client:  client,
-		handler: handler,
-		obs:     obs,
-		ctx:     ctx,
-		cancel:  cancel,
-		logger:  logger.WithFields(map[string]any{"queue_url": cfg.QueueURL}),
+		cfg:       cfg,
+		client:    client,
+		handler:   handler,
+		telemetry: telemetry,
+		ctx:       ctx,
+		cancel:    cancel,
+		logger:    logger.WithFields(map[string]any{"queue_url": cfg.QueueURL}),
 	}
 }
 
@@ -106,7 +106,7 @@ func (c *Consumer) run(wg *sync.WaitGroup) {
 }
 
 func (c *Consumer) handle(ctx context.Context, msg types.Message) HandleResult {
-	ctx, span := c.obs.StartSpan(c.ctx, "sqs.consumer.handle_message")
+	ctx, span := c.telemetry.StartSpan(c.ctx, "sqs.consumer.handle_message")
 	defer span.End()
 
 	result, err := c.handler.Handle(ctx, msg)

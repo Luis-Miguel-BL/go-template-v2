@@ -6,25 +6,25 @@ import (
 	"fmt"
 
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/logger"
-	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/observability"
+	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/telemetry"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/config"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
 type Runner struct {
-	registry *Registry
-	cfg      *config.Config
-	log      logger.Logger
-	obs      observability.Observability
+	registry  *Registry
+	cfg       *config.Config
+	log       logger.Logger
+	telemetry telemetry.Telemetry
 }
 
-func NewRunner(cfg *config.Config, log logger.Logger, registry *Registry, obs observability.Observability) *Runner {
+func NewRunner(cfg *config.Config, log logger.Logger, registry *Registry, telemetry telemetry.Telemetry) *Runner {
 	return &Runner{
-		cfg:      cfg,
-		log:      log,
-		registry: registry,
-		obs:      obs,
+		cfg:       cfg,
+		log:       log,
+		registry:  registry,
+		telemetry: telemetry,
 	}
 }
 
@@ -50,7 +50,7 @@ func (r *Runner) Run(lambdaName string) {
 
 func (r *Runner) instrument(handler any, lambdaName string) any {
 	return func(ctx context.Context, event any) (any, error) {
-		ctx, span := r.obs.StartSpan(ctx, "lambda.handler."+lambdaName)
+		ctx, span := r.telemetry.StartSpan(ctx, "lambda.handler."+lambdaName)
 		defer span.End()
 
 		switch h := handler.(type) {

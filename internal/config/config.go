@@ -6,13 +6,14 @@ type BootstrapConfig struct {
 }
 
 type Config struct {
-	Environment string        `mapstructure:"environment"`
-	App         AppConfig     `mapstructure:"app"`
-	Logger      LoggerConfig  `mapstructure:"logger"`
-	Server      ServerConfig  `mapstructure:"server"`
-	Worker      WorkerConfig  `mapstructure:"worker"`
-	AWS         AWSConfig     `mapstructure:"aws"`
-	Monitor     MonitorConfig `mapstructure:"monitor"`
+	Environment string            `mapstructure:"environment"`
+	App         AppConfig         `mapstructure:"app"`
+	Logger      LoggerConfig      `mapstructure:"logger"`
+	Server      ServerConfig      `mapstructure:"server"`
+	Worker      WorkerConfig      `mapstructure:"worker"`
+	AWS         AWSConfig         `mapstructure:"aws"`
+	Monitor     MonitorConfig     `mapstructure:"monitor"`
+	Integration IntegrationConfig `mapstructure:"integration"`
 }
 
 type ServerConfig struct {
@@ -62,6 +63,16 @@ type DynamoDBConfig struct {
 type SSMConfig struct {
 	LoadFromSSM     bool   `mapstructure:"load-from-ssm"`
 	ParameterPrefix string `mapstructure:"parameter-prefix"`
+}
+
+type IntegrationConfig struct {
+	ExampleAPI IntegrationExampleAPIConfig `mapstructure:"example-api"`
+}
+
+type IntegrationExampleAPIConfig struct {
+	Enabled bool   `mapstructure:"enabled"`
+	BaseURL string `mapstructure:"base-url"`
+	APIKey  string `mapstructure:"api-key"`
 }
 
 func (c *Config) IsProduction() bool {

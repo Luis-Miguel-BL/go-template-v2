@@ -4,18 +4,18 @@ import (
 	"context"
 
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/eventbus"
-	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/observability"
-	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/observability/metric"
+	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/telemetry"
+	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/telemetry/metric"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/domain"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/domain/lead/event"
 )
 
 type metricSubscriber struct {
-	obs observability.Observability
+	telemetry telemetry.Telemetry
 }
 
-func NewMetricSubscriber(obs observability.Observability) eventbus.EventSubscriber {
-	return &metricSubscriber{obs: obs}
+func NewMetricSubscriber(telemetry telemetry.Telemetry) eventbus.EventSubscriber {
+	return &metricSubscriber{telemetry: telemetry}
 }
 
 func (s *metricSubscriber) SubscribedEvents() (syncHandlers eventbus.EventHandlersMap, asyncHandlers eventbus.EventHandlersMap) {
@@ -25,5 +25,5 @@ func (s *metricSubscriber) SubscribedEvents() (syncHandlers eventbus.EventHandle
 }
 
 func (s *metricSubscriber) TrackLeadCreated(ctx context.Context, e domain.Event) {
-	s.obs.RecordMetric(ctx, metric.LeadCounter{})
+	s.telemetry.RecordMetric(ctx, metric.LeadCounter{})
 }
