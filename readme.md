@@ -48,7 +48,9 @@
 
 - [ ] **Automated Testing**
 	- [ ] Add unit tests for core logic
-	- [ ] Add integration tests for infrastructure components
+	- [X] Add integration tests for API
+	- [ ] Add integration tests for Consumer
+	- [ ] Add integration tests for Lambda
 	- [ ] Set up test coverage reporting
 
 - [ ] **Load Testing**

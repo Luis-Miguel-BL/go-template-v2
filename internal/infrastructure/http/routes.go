@@ -17,13 +17,13 @@ func (s *Server) setup() {
 	s.Echo.GET("/health", func(c echo.Context) error {
 		return c.String(http.StatusOK, "OK")
 	})
-	baseRoute := s.Echo.Group(s.cfg.Server.Prefix, middleware.NewValidateAppKeyMiddleware(s.authService))
 
-	baseRoute.POST("/authorization", s.authController.Authorization)
-
+	baseRoute := s.Echo.Group(s.cfg.Server.Prefix)
+	appKeyRoute := baseRoute.Group("", middleware.NewValidateAppKeyMiddleware(s.authService))
 	publicRoute := baseRoute.Group("", middleware.NewValidateSessionMiddleware(s.authService, s.telemetry))
 	privateRoute := publicRoute.Group("", middleware.NewValidateLeadSessionMiddleware(s.authService, s.telemetry))
 
+	appKeyRoute.POST("/authorization", s.authController.Authorization)
 	publicRoute.POST("/leads", s.leadController.Create)
 	privateRoute.POST("/leads2", s.leadController.Create)
 }

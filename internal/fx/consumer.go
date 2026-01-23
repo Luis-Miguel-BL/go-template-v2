@@ -54,7 +54,7 @@ func ConsumerModule(wg *sync.WaitGroup) fx.Option {
 
 func newExampleConsumer(cfg *config.Config, client *aws.SQSClient, telemetry telemetry.Telemetry, handler *handler.ExampleHandler, logger logger.Logger) *sqs.Consumer {
 	consumerConfig := sqs.ConsumerConfig{
-		QueueURL: cfg.Worker.SQSQueueURL,
+		QueueURL: cfg.Consumer.SQSQueueURL,
 	}
 	return sqs.NewConsumer(consumerConfig, client, telemetry, handler, logger)
 }

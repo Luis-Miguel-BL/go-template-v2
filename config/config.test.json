@@ -6,15 +6,15 @@
   "server": {
     "port": 3000,
     "prefix": "/v1",
-    "app-key": "your-app-key-here",
-    "jwt-secret": "your-jwt-secret-here"
+    "app-key": "fake-app-key",
+    "jwt-secret": "fake-jwt-secret"
   },
   "consumer": {
     "enabled": true,
-    "sqs-queue-url": "http://sqs.sa-east-1.localhost.localstack.cloud:4566/000000000000/lead-created"
+    "sqs-queue-url": ""
   },
   "app": {
-    "name": "go-template",
+    "name": "go-template-test",
     "in-memory-db": false
   },
   "aws": {
@@ -27,7 +27,7 @@
   "monitor": {
     "enabled": false,
     "new-relic": {
-      "custom-event-prefix": "GoTemplate",
+      "custom-event-prefix": "GoTemplateTest",
       "app-key": "nr-license-key-here",
       "endpoint": "otlp.nr-data.net:4318",
       "shutdown-timeout-seconds": 5
@@ -37,7 +37,7 @@
     "example-api": {
       "enabled": true,
       "base-url": "https://api.example.com",
-      "api-key": "your-api-key-here"
+      "api-key": "fake-api-key"
     }
   }
 }

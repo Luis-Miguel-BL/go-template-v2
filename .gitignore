@@ -1,2 +1,3 @@
 .docker
 __debug_*
+config/config.local.json

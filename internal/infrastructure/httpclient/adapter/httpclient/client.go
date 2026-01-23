@@ -119,7 +119,9 @@ func (c *client) Do(ctx context.Context, method, endpoint string, opts ...httpcl
 
 	resp, err := c.http.Do(req.WithContext(ctx))
 	if err != nil {
-		c.telemetry.RecordError(ctx, err)
+		if c.monitorEnabled {
+			c.telemetry.RecordError(ctx, err)
+		}
 		return nil, err
 	}
 	defer resp.Body.Close()

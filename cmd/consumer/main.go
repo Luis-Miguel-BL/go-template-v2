@@ -10,9 +10,9 @@ import (
 func main() {
 	var wg sync.WaitGroup
 	app := fx.New(
-		_fx.RootModule(&wg),
+		_fx.RootModule,
 		_fx.ConsumerModule(&wg),
-		_fx.ApplicationModule,
+		_fx.ApplicationModule(&wg),
 	)
 	app.Run()
 	wg.Wait()

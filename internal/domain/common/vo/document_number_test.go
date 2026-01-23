@@ -3,7 +3,6 @@ package vo
 import (
 	"testing"
 
-	"github.com/Luis-Miguel-BL/go-lm-template/internal/domain"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -29,7 +28,7 @@ func TestCannotCreateAnInvalidDocumentNumber(t *testing.T) {
 
 	for _, document := range invalidDocuments {
 		documentNumber, err := NewDocumentNumber(document)
-		assert.Equal(t, domain.InvalidInputError("document_number", "invalid_document_number"), err)
+		assert.Contains(t, err.Error(), "invalid document number")
 		assert.Empty(t, documentNumber.String())
 	}
 }

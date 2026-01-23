@@ -12,8 +12,8 @@ import (
 func Load(cfg *BootstrapConfig, ssmClient *aws.SSMClient) (*Config, error) {
 	v := viper.New()
 
-	v.SetConfigName("config")
-	v.AddConfigPath("./config/")
+	v.SetConfigName(fmt.Sprintf("config.%s", cfg.Environment))
+	v.AddConfigPath(cfg.ConfigPath)
 
 	if err := v.ReadInConfig(); err != nil {
 		return nil, err
@@ -38,10 +38,11 @@ func LoadBootstrapConfig() (*BootstrapConfig, error) {
 	v := viper.New()
 
 	v.AutomaticEnv()
-	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 	v.SetEnvPrefix("APP")
 
-	v.SetDefault("environment", "")
+	v.SetDefault("environment", "local")
+	v.SetDefault("config-path", "./config/")
 	v.SetDefault("aws.region", "")
 	v.SetDefault("aws.endpoint", "")
 	v.SetDefault("aws.ssm.load-from-ssm", "")

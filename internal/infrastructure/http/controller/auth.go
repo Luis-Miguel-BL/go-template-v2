@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/service"
-	"github.com/Luis-Miguel-BL/go-lm-template/internal/infrastructure/http/payload"
+	"github.com/Luis-Miguel-BL/go-lm-template/internal/infrastructure/http/response"
 	"github.com/labstack/echo/v4"
 )
 
@@ -22,7 +22,7 @@ func (c *AuthController) Authorization(ctx echo.Context) error {
 		return Error(ctx, err)
 	}
 
-	return Ok(ctx, payload.AuthorizationResponse{
+	return Ok(ctx, response.AuthorizationResponse{
 		AccessToken: accessToken.Token,
 		ExpiresIn:   accessToken.ExpiresIn,
 	})

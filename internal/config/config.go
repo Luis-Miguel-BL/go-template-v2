@@ -2,6 +2,7 @@ package config
 
 type BootstrapConfig struct {
 	Environment string    `mapstructure:"environment"`
+	ConfigPath  string    `mapstructure:"config-path"`
 	AWS         AWSConfig `mapstructure:"aws"`
 }
 
@@ -10,7 +11,7 @@ type Config struct {
 	App         AppConfig         `mapstructure:"app"`
 	Logger      LoggerConfig      `mapstructure:"logger"`
 	Server      ServerConfig      `mapstructure:"server"`
-	Worker      WorkerConfig      `mapstructure:"worker"`
+	Consumer    ConsumerConfig    `mapstructure:"consumer"`
 	AWS         AWSConfig         `mapstructure:"aws"`
 	Monitor     MonitorConfig     `mapstructure:"monitor"`
 	Integration IntegrationConfig `mapstructure:"integration"`
@@ -23,7 +24,7 @@ type ServerConfig struct {
 	JWTSecret string `mapstructure:"jwt-secret"`
 }
 
-type WorkerConfig struct {
+type ConsumerConfig struct {
 	Enabled     bool   `mapstructure:"enabled"`
 	SQSQueueURL string `mapstructure:"sqs-queue-url"`
 }
