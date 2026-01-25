@@ -16,7 +16,7 @@ func (s *ConsumerSuite) TestExampleHandler() {
 		s.exampleAPIIntegration.
 			On("Create", mock.Anything).
 			Run(util.DoneChan(done)).
-			Return("", nil)
+			Return("", nil).Once()
 
 		msgBody := `{
 			"id": "test",

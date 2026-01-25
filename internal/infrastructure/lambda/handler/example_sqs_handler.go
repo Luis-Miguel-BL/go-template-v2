@@ -4,24 +4,31 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/integration"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/logger"
 	"github.com/aws/aws-lambda-go/events"
 )
 
+const (
+	ExampleSQSHandlerLambdaName = "ExampleSQSHandler"
+)
+
 type ExampleSQSHandler struct {
-	log logger.Logger
+	log                   logger.Logger
+	exampleAPIIntegration integration.ExampleAPIIntegration
 }
 
-func NewExampleSQSHandler(log logger.Logger) *ExampleSQSHandler {
+func NewExampleSQSHandler(log logger.Logger, exampleAPIIntegration integration.ExampleAPIIntegration) *ExampleSQSHandler {
 	exampleHandler := ExampleSQSHandler{
-		log: log.WithFields(map[string]any{"handler": "ExampleSQSHandler"}),
+		log:                   log.WithFields(map[string]any{"handler": "ExampleSQSHandler"}),
+		exampleAPIIntegration: exampleAPIIntegration,
 	}
 
 	return &exampleHandler
 }
 
 func (h *ExampleSQSHandler) LambdaName() string {
-	return "ExampleSQSHandler"
+	return ExampleSQSHandlerLambdaName
 }
 
 func (h *ExampleSQSHandler) Handle(ctx context.Context, event events.SQSEvent) (res events.SQSEventResponse, err error) {
@@ -30,7 +37,12 @@ func (h *ExampleSQSHandler) Handle(ctx context.Context, event events.SQSEvent) (
 		h.log.Error("Failed to marshal SQS event", "error", err)
 		return res, err
 	}
-	h.log.Info("ExampleSQSHandler handled message " + string(e))
+	id, err := h.exampleAPIIntegration.Create(ctx)
+	if err != nil {
+		h.log.Error("Failed to create example", "error", err)
+		return res, err
+	}
+	h.log.Info("ExampleSQSHandler handled message " + string(e) + " with id " + id)
 	return res, nil
 }
 

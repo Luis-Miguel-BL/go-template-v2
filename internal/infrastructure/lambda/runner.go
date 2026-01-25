@@ -41,7 +41,7 @@ func (r *Runner) Run(lambdaName string) {
 	}
 
 	if r.cfg.IsLocal() {
-		r.runLocal(handler)
+		r.runLocalWithSample(handler)
 		return
 	}
 
@@ -68,7 +68,7 @@ type localRunnable[Event any, Response any] interface {
 	Handle(ctx context.Context, event Event) (Response, error)
 }
 
-func (r *Runner) runLocal(handler any) {
+func (r *Runner) runLocalWithSample(handler any) {
 	r.log.Info("Running lambda in local mode")
 
 	switch h := handler.(type) {
@@ -79,9 +79,29 @@ func (r *Runner) runLocal(handler any) {
 			r.log.Error("local execution error: " + err.Error())
 			return
 		}
+
 		r.log.Info(fmt.Sprintf("local execution finished successfully: %v", resp))
 
 	default:
 		r.log.Error("handler does not support local execution (localRunnable not implemented)")
+	}
+}
+
+func (r *Runner) RunLocal(lambdaName string, event any) (any, error) {
+	if lambdaName == "" {
+		return nil, fmt.Errorf("lambda name is required")
+	}
+
+	handler, err := r.registry.Get(lambdaName)
+	if err != nil {
+		return nil, err
+	}
+
+	switch h := handler.(type) {
+	case localRunnable[events.SQSEvent, events.SQSEventResponse]:
+		return h.Handle(context.Background(), event.(events.SQSEvent))
+
+	default:
+		return nil, fmt.Errorf("unsupported handler type for RunLocal")
 	}
 }

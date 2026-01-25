@@ -80,5 +80,5 @@ func (c *Config) IsProduction() bool {
 	return c.Environment == "production"
 }
 func (c *Config) IsLocal() bool {
-	return c.Environment == "local"
+	return c.Environment == "local" || c.Environment == "test"
 }

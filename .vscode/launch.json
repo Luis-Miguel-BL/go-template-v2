@@ -81,6 +81,19 @@
         "-test.v",
         "-test.count=1"
       ]
+    },
+    {
+      "name": "Debug Integration Tests (Lambda)",
+      "type": "go",
+      "request": "launch",
+      "mode": "test",
+      "program": "${workspaceFolder}/test/integration/lambda",
+      "args": [
+        "-test.run",
+        "TestLambdaSuite",
+        "-test.v",
+        "-test.count=1"
+      ]
     }
   ]
 }

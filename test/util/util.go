@@ -14,7 +14,11 @@ type TestUtil struct {
 	*aws.SQSClient
 }
 
-func NewTestUtil(cfg *config.Config, httpClientFactory httpclient.HTTPClientFactory, sqsClient *aws.SQSClient) *TestUtil {
+func NewTestUtil(
+	cfg *config.Config,
+	httpClientFactory httpclient.HTTPClientFactory,
+	sqsClient *aws.SQSClient,
+) *TestUtil {
 	baseURL := fmt.Sprintf("http://localhost:%d", cfg.Server.Port)
 	return &TestUtil{
 		cfg:        cfg,
