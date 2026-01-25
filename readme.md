@@ -49,7 +49,7 @@
 - [ ] **Automated Testing**
 	- [ ] Add unit tests for core logic
 	- [X] Add integration tests for API
-	- [ ] Add integration tests for Consumer
+	- [X] Add integration tests for Consumer
 	- [ ] Add integration tests for Lambda
 	- [ ] Set up test coverage reporting
 

@@ -17,10 +17,21 @@ type BaseTestSuite struct {
 	suite.Suite
 	*util.TestUtil
 
+	mocks   []fx.Option
 	ctx     context.Context
 	wg      *sync.WaitGroup
 	app     *fx.App
 	readyCh chan struct{}
+}
+
+func (s *BaseTestSuite) SetupMock(mock any, mockType any) {
+	mockOpt := fx.Replace(
+		fx.Annotate(
+			mock,
+			fx.As(mockType),
+		),
+	)
+	s.mocks = append(s.mocks, mockOpt)
 }
 
 func (s *BaseTestSuite) SetupApp(wg *sync.WaitGroup, modules ...fx.Option) {
@@ -32,7 +43,7 @@ func (s *BaseTestSuite) SetupApp(wg *sync.WaitGroup, modules ...fx.Option) {
 		s.testModule(),
 	}
 	opts = append(opts, modules...)
-
+	opts = append(opts, s.mocks...)
 	s.app = fx.New(opts...)
 
 	go func() {
@@ -43,14 +54,13 @@ func (s *BaseTestSuite) SetupApp(wg *sync.WaitGroup, modules ...fx.Option) {
 }
 
 func (s *BaseTestSuite) TearDownSuite() {
-	if s.wg != nil {
-		s.wg.Wait()
-	}
-
 	if s.app != nil {
 		_ = s.app.Stop(s.ctx)
 	}
 
+	if s.wg != nil {
+		s.wg.Wait()
+	}
 }
 
 func (s *BaseTestSuite) testModule() fx.Option {
@@ -72,7 +82,7 @@ func (s *BaseTestSuite) testLifecycle(lc fx.Lifecycle,
 	dynamoDBClient *aws.DynamoDBClient,
 	sqsClient *aws.SQSClient,
 ) {
-	s.TestUtil = util.NewTestUtil(cfg, httpClientFactory)
+	s.TestUtil = util.NewTestUtil(cfg, httpClientFactory, sqsClient)
 	lc.Append(fx.Hook{
 		OnStop: func(ctx context.Context) error {
 			deleteTables(ctx, dynamoDBClient)
@@ -86,11 +96,10 @@ func (s *BaseTestSuite) testLifecycle(lc fx.Lifecycle,
 			}
 			cfg.AWS.DynamoDB.LeadTableName = tableName
 
-			queueURL, err := createQueues(ctx, sqsClient)
+			_, err = createQueues(ctx, sqsClient)
 			if err != nil {
 				return err
 			}
-			cfg.Consumer.SQSQueueURL = queueURL
 
 			close(s.readyCh)
 			return nil
