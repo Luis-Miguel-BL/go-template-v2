@@ -53,8 +53,8 @@
 	- [X] Add integration tests for Lambda
 	- [X] Set up test coverage reporting
 
-- [ ] **Load Testing**
-	- [ ] Provide load testing scripts or configuration (e.g., k6, Vegeta)
+- [X] **Load Testing**
+	- [X] Provide load testing scripts or configuration (e.g., k6, Vegeta)
 
 - [ ] **Profiling**
 	- [ ] Provide profiling scripts or configuration (e.g., pprof)
