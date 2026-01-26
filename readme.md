@@ -46,15 +46,18 @@
 	- [X] Add observability to external calls (tracing, metrics, logs)
 	- [X] Monitor external API latency, errors, and retries (OpenTelemetry + New Relic)
 
-- [ ] **Automated Testing**
-	- [ ] Add unit tests for core logic
+- [X] **Automated Testing**
+	- [X] Add unit tests for core logic
 	- [X] Add integration tests for API
 	- [X] Add integration tests for Consumer
-	- [ ] Add integration tests for Lambda
-	- [ ] Set up test coverage reporting
+	- [X] Add integration tests for Lambda
+	- [X] Set up test coverage reporting
 
 - [ ] **Load Testing**
 	- [ ] Provide load testing scripts or configuration (e.g., k6, Vegeta)
+
+- [ ] **Profiling**
+	- [ ] Provide profiling scripts or configuration (e.g., pprof)
 
 - [ ] **CI/CD**
 	- [ ] Set up CI pipeline for linting, testing, and building

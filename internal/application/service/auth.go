@@ -10,14 +10,14 @@ import (
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/util"
 )
 
-type AuthService struct {
+type authService struct {
 	jwtHelper       auth.JWTHelper[TokenClaims]
 	appKey          string
 	tokenExpiration time.Duration
 }
 
-func NewAuthService(jwtHelper auth.JWTHelper[TokenClaims], cfg *config.Config) *AuthService {
-	return &AuthService{
+func NewAuthService(jwtHelper auth.JWTHelper[TokenClaims], cfg *config.Config) *authService {
+	return &authService{
 		jwtHelper:       jwtHelper,
 		appKey:          cfg.Server.AppKey,
 		tokenExpiration: time.Hour * 24,
@@ -29,7 +29,7 @@ type TokenClaims struct {
 	SessionID *string `json:"session_id"`
 }
 
-func (s *AuthService) GenerateToken(ctx context.Context) (accessToken dto.AccessToken, err error) {
+func (s *authService) GenerateToken(ctx context.Context) (accessToken dto.AccessToken, err error) {
 	sessionID := util.NewUUID()
 	clains := TokenClaims{
 		SessionID: &sessionID,
@@ -46,11 +46,11 @@ func (s *AuthService) GenerateToken(ctx context.Context) (accessToken dto.Access
 	}, nil
 }
 
-func (s *AuthService) ValidateToken(ctx context.Context, token string) (tokenClaims *TokenClaims, err error) {
+func (s *authService) ValidateToken(ctx context.Context, token string) (tokenClaims *TokenClaims, err error) {
 	return s.jwtHelper.ValidateToken(token)
 }
 
-func (s *AuthService) RefreshToken(ctx context.Context, claims *TokenClaims) (newAccessToken dto.AccessToken, err error) {
+func (s *authService) RefreshToken(ctx context.Context, claims *TokenClaims) (newAccessToken dto.AccessToken, err error) {
 	newClaims := auth.FromContext[TokenClaims](ctx)
 
 	if claims != nil {
@@ -72,6 +72,6 @@ func (s *AuthService) RefreshToken(ctx context.Context, claims *TokenClaims) (ne
 	}, nil
 }
 
-func (s *AuthService) ValidateAppKey(ctx context.Context, appKey string) (isValid bool) {
+func (s *authService) ValidateAppKey(ctx context.Context, appKey string) (isValid bool) {
 	return appKey == s.appKey
 }

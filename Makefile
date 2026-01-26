@@ -1,4 +1,4 @@
-.PHONY: run-api run-worker test create-dynamo-table create-sqs-queue
+.PHONY: run-api run-worker test create-dynamo-table create-sqs-queue coverage-html coverage-cli
 
 run-api:
 	go run cmd/api/main.go
@@ -32,5 +32,12 @@ get-sqs-queue-url:
 	  --region sa-east-1
 
 test:
-	go test -failfast ./... -v
+	go test ./... -coverprofile=coverage/coverage.out -coverpkg=./...   
 
+coverage-html: test
+	go tool cover -html=coverage/coverage.out -o coverage/coverage.html
+	open coverage/coverage.html
+
+coverage-cli: test
+	go tool cover -func=coverage/coverage.out
+	

@@ -12,7 +12,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func NewValidateSessionMiddleware(authService *service.AuthService, telemetry telemetry.Telemetry) echo.MiddlewareFunc {
+func NewValidateSessionMiddleware(authService service.AuthService, telemetry telemetry.Telemetry) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) (err error) {
 			ctx := c.Request().Context()
@@ -26,7 +26,7 @@ func NewValidateSessionMiddleware(authService *service.AuthService, telemetry te
 				return echo.NewHTTPError(http.StatusUnauthorized, http.StatusText(http.StatusUnauthorized))
 			}
 
-			ctx = auth.NewContext(ctx, tokenClaims)
+			ctx = auth.WithContext(ctx, tokenClaims)
 			ctx = enrichContextAndLogger(ctx, *tokenClaims, telemetry)
 			c.SetRequest(c.Request().WithContext(ctx))
 
@@ -35,7 +35,7 @@ func NewValidateSessionMiddleware(authService *service.AuthService, telemetry te
 	}
 }
 
-func NewValidateLeadSessionMiddleware(authService *service.AuthService, telemetry telemetry.Telemetry) echo.MiddlewareFunc {
+func NewValidateLeadSessionMiddleware(authService service.AuthService, telemetry telemetry.Telemetry) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) (err error) {
 			ctx := c.Request().Context()

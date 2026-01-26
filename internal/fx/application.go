@@ -26,7 +26,7 @@ func ApplicationModule(wg *sync.WaitGroup) fx.Option {
 			usecase.NewCreateLead,
 
 			// services
-			service.NewAuthService,
+			fx.Annotate(service.NewAuthService, fx.As(new(service.AuthService))),
 
 			// repositories
 			func(cfg *config.Config, telemetry telemetry.Telemetry, dispatcher *messaging.AggregateRootEventDispatcher, dynamoDBClient *aws.DynamoDBClient) (leadRepo lead.LeadRepository) {

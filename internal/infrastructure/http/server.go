@@ -19,13 +19,13 @@ type Server struct {
 	cfg       *config.Config
 	log       logger.Logger
 
-	authService *service.AuthService
+	authService service.AuthService
 
 	leadController *controller.LeadController
 	authController *controller.AuthController
 }
 
-func NewServer(cfg *config.Config, log logger.Logger, telemetry telemetry.Telemetry, authService *service.AuthService, leadController *controller.LeadController, authController *controller.AuthController) *Server {
+func NewServer(cfg *config.Config, log logger.Logger, telemetry telemetry.Telemetry, authService service.AuthService, leadController *controller.LeadController, authController *controller.AuthController) *Server {
 	server := &Server{
 		Echo:           echo.New(),
 		cfg:            cfg,

@@ -11,11 +11,11 @@ import (
 )
 
 type CreateLead struct {
-	authService *service.AuthService
+	authService service.AuthService
 	leadRepo    lead.LeadRepository
 }
 
-func NewCreateLead(authService *service.AuthService, leadRepo lead.LeadRepository) *CreateLead {
+func NewCreateLead(authService service.AuthService, leadRepo lead.LeadRepository) *CreateLead {
 	return &CreateLead{
 		authService: authService,
 		leadRepo:    leadRepo,

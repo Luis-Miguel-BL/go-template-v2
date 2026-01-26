@@ -14,7 +14,7 @@ const (
 	tokenClaimsContextKey = "token"
 )
 
-func NewContext[Claims any](ctx context.Context, token *Claims) (newContext context.Context) {
+func WithContext[Claims any](ctx context.Context, token *Claims) (newContext context.Context) {
 	newContext = context.WithValue(ctx, tokenClaimsContextKey, token)
 
 	return newContext
