@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/infrastructure/http/response"
-	"github.com/Luis-Miguel-BL/go-lm-template/test/util"
+	"github.com/Luis-Miguel-BL/go-lm-template/test/integration/util"
 )
 
 func (s *APISuite) TestAuthorizationEndpoint() {

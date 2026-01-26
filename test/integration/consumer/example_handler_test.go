@@ -3,7 +3,7 @@ package consumer
 import (
 	"time"
 
-	"github.com/Luis-Miguel-BL/go-lm-template/test/util"
+	"github.com/Luis-Miguel-BL/go-lm-template/test/integration/util"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/stretchr/testify/mock"

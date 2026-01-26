@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"github.com/Luis-Miguel-BL/go-lm-template/test/util"
+	"github.com/Luis-Miguel-BL/go-lm-template/test/integration/util"
 )
 
 func (s *APISuite) TestHealthEndpoint() {

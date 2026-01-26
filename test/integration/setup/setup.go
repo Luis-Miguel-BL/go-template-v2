@@ -8,7 +8,7 @@ import (
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/config"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/infrastructure/aws"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/infrastructure/httpclient"
-	"github.com/Luis-Miguel-BL/go-lm-template/test/util"
+	"github.com/Luis-Miguel-BL/go-lm-template/test/integration/util"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/fx"
 )

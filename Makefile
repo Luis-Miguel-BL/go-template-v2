@@ -1,10 +1,29 @@
 .PHONY: run-api run-worker test create-dynamo-table create-sqs-queue coverage-html coverage-cli
 
+
+APP_AWS_ENDPOINT=http://localhost:4566
+APP_AWS_REGION=sa-east-1
+APP_AWS_SSM_LOAD_FROM_SSM=false
+APP_ENVIRONMENT=local
+
+AWS_ACCESS_KEY_ID=test
+AWS_SECRET_ACCESS_KEY=test
+AWS_SESSION_TOKEN=test
+
+LOCAL_ENV = \
+	APP_AWS_ENDPOINT=$(APP_AWS_ENDPOINT) \
+	APP_AWS_REGION=$(APP_AWS_REGION) \
+	APP_AWS_SSM_LOAD_FROM_SSM=$(APP_AWS_SSM_LOAD_FROM_SSM) \
+	APP_ENVIRONMENT=$(APP_ENVIRONMENT) \
+	AWS_ACCESS_KEY_ID=$(AWS_ACCESS_KEY_ID) \
+	AWS_SECRET_ACCESS_KEY=$(AWS_SECRET_ACCESS_KEY) \
+	AWS_SESSION_TOKEN=$(AWS_SESSION_TOKEN)
+
 run-api:
-	go run cmd/api/main.go
+	$(LOCAL_ENV) go run cmd/api/main.go
 
 run-worker:
-	go run cmd/worker/main.go
+	$(LOCAL_ENV) go run cmd/worker/main.go
 
 create-dynamo-table:
 	aws dynamodb create-table \
@@ -32,12 +51,15 @@ get-sqs-queue-url:
 	  --region sa-east-1
 
 test:
-	go test ./... -coverprofile=coverage/coverage.out -coverpkg=./...   
+	go test ./... -coverprofile=test/coverage/coverage.out -coverpkg=./...   
 
 coverage-html: test
-	go tool cover -html=coverage/coverage.out -o coverage/coverage.html
-	open coverage/coverage.html
+	go tool cover -html=test/coverage/coverage.out -o test/coverage/coverage.html
+	open test/coverage/coverage.html
 
 coverage-cli: test
-	go tool cover -func=coverage/coverage.out
+	go tool cover -func=test/coverage/coverage.out
 	
+
+load-test:
+	go run test/load/create_lead.go

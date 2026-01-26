@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/infrastructure/lambda/handler"
-	"github.com/Luis-Miguel-BL/go-lm-template/test/builder"
-	"github.com/Luis-Miguel-BL/go-lm-template/test/util"
+	"github.com/Luis-Miguel-BL/go-lm-template/test/integration/builder"
+	"github.com/Luis-Miguel-BL/go-lm-template/test/integration/util"
 	"github.com/stretchr/testify/mock"
 )
 

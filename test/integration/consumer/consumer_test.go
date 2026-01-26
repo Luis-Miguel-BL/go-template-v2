@@ -7,7 +7,7 @@ import (
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/integration"
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/application/integration/mocks"
 	_fx "github.com/Luis-Miguel-BL/go-lm-template/internal/fx"
-	"github.com/Luis-Miguel-BL/go-lm-template/test/setup"
+	"github.com/Luis-Miguel-BL/go-lm-template/test/integration/setup"
 	"github.com/stretchr/testify/suite"
 )
 
