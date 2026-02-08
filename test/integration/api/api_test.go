@@ -20,6 +20,8 @@ func (s *APISuite) SetupSuite() {
 		_fx.HttpModule(wg),
 		_fx.ApplicationModule(wg),
 	)
+
+	s.AwaitAPIReady()
 }
 
 func TestAPISuite(t *testing.T) {

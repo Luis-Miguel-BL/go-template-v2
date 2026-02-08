@@ -100,7 +100,6 @@ func (s *BaseTestSuite) testLifecycle(lc fx.Lifecycle,
 			if err != nil {
 				return err
 			}
-
 			close(s.readyCh)
 			return nil
 		},
@@ -113,5 +112,22 @@ func (s *BaseTestSuite) awaitReady() {
 	case <-s.readyCh:
 	case <-time.After(timeout):
 		s.T().Fatal("app did not become ready within timeout")
+	}
+}
+
+func (s *BaseTestSuite) AwaitAPIReady() {
+	timeout := 10 * time.Second
+	ticker := time.NewTicker(500 * time.Millisecond)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			if s.TestUtil.IsAPIHealthy(s.ctx) {
+				return
+			}
+		case <-time.After(timeout):
+			s.T().Fatal("API did not become healthy within timeout")
+		}
 	}
 }

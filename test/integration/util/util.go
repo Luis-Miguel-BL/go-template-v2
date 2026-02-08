@@ -1,6 +1,7 @@
 package util
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/Luis-Miguel-BL/go-lm-template/internal/config"
@@ -29,4 +30,12 @@ func NewTestUtil(
 
 func (t *TestUtil) GetConfig() *config.Config {
 	return t.cfg
+}
+
+func (t *TestUtil) IsAPIHealthy(ctx context.Context) bool {
+	resp, err := t.httpClient.Get(ctx, "/health")
+	if err != nil {
+		return false
+	}
+	return resp.StatusCode() == 200
 }
